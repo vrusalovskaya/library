@@ -31,6 +31,5 @@ public class Main {
 
         System.out.println();
         consolePrinter.print(library.search("2024-24"));
-
     }
 }

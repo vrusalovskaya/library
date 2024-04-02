@@ -32,13 +32,13 @@ public class FileStorage implements Storage {
             while ((nextRecord = csvReader.readNext()) != null) {
 
                 String type = nextRecord[0];
-                if (Objects.equals(defineType(type), "BOOK")) {
+                if (LibraryItemValidation.isBook(type)) {
                     Book book = new Book (nextRecord[1], nextRecord[2], Integer.parseInt(nextRecord[3]), nextRecord[4]);
                     items.add(book);
-                } else if (Objects.equals(defineType(type), "MAGAZINE")) {
+                } else if (LibraryItemValidation.isMagazine(type)) {
                    Magazine magazine = new Magazine (nextRecord[1], nextRecord[2], Integer.parseInt(nextRecord[3]), Integer.parseInt(nextRecord[4]));
                     items.add(magazine);
-                } else if (Objects.equals(defineType(type), "LOCALIZEDBOOK")) {
+                } else if (LibraryItemValidation.isLocalizedBook(type)) {
                     LocalizedBook localizedBook = new LocalizedBook (nextRecord[1], nextRecord[2], nextRecord[3], Integer.parseInt(nextRecord[4]), nextRecord[5]);
                     items.add(localizedBook);
                 }
@@ -58,14 +58,4 @@ public class FileStorage implements Storage {
         return null;
     }
 
-    private String defineType (String value){
-        if (value.toUpperCase().trim().equals(LibraryItemType.BOOK.toString())){
-            return "BOOK";
-        } else if (value.toUpperCase().replaceAll("\\s+","").equals(LibraryItemType.LOCALIZEDBOOK.toString())) {
-            return "LOCALIZEDBOOK";
-        } else if (value.toUpperCase().trim().equals(LibraryItemType.MAGAZINE.toString())) {
-            return "MAGAZINE";
-        }
-        return null;
-    }
 }
