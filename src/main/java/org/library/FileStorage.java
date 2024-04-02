@@ -31,14 +31,15 @@ public class FileStorage implements Storage {
 
             while ((nextRecord = csvReader.readNext()) != null) {
 
-                if (nextRecord.length == 4 && IsbnValidator.isValidIsbn(nextRecord[3])) {
-                    Book book = new Book (nextRecord[0], nextRecord[1], Integer.parseInt(nextRecord[2]), nextRecord[3]);
+                String type = nextRecord[0];
+                if (Objects.equals(defineType(type), "BOOK")) {
+                    Book book = new Book (nextRecord[1], nextRecord[2], Integer.parseInt(nextRecord[3]), nextRecord[4]);
                     items.add(book);
-                } else if (nextRecord.length == 4 && !IsbnValidator.isValidIsbn(nextRecord[3])) {
-                   Magazine magazine = new Magazine (nextRecord[0], nextRecord[1], Integer.parseInt(nextRecord[2]), Integer.parseInt(nextRecord[3]));
+                } else if (Objects.equals(defineType(type), "MAGAZINE")) {
+                   Magazine magazine = new Magazine (nextRecord[1], nextRecord[2], Integer.parseInt(nextRecord[3]), Integer.parseInt(nextRecord[4]));
                     items.add(magazine);
-                } else if (nextRecord.length == 5) {
-                    LocalizedBook localizedBook = new LocalizedBook (nextRecord[0], nextRecord[1], nextRecord[2], Integer.parseInt(nextRecord[3]), nextRecord[4]);
+                } else if (Objects.equals(defineType(type), "LOCALIZEDBOOK")) {
+                    LocalizedBook localizedBook = new LocalizedBook (nextRecord[1], nextRecord[2], nextRecord[3], Integer.parseInt(nextRecord[4]), nextRecord[5]);
                     items.add(localizedBook);
                 }
             }
@@ -53,6 +54,17 @@ public class FileStorage implements Storage {
             if (Objects.equals(item.getISBN(), isbn)){
                 return item;
             }
+        }
+        return null;
+    }
+
+    private String defineType (String value){
+        if (value.toUpperCase().trim().equals(LibraryItemType.BOOK.toString())){
+            return "BOOK";
+        } else if (value.toUpperCase().replaceAll("\\s+","").equals(LibraryItemType.LOCALIZEDBOOK.toString())) {
+            return "LOCALIZEDBOOK";
+        } else if (value.toUpperCase().trim().equals(LibraryItemType.MAGAZINE.toString())) {
+            return "MAGAZINE";
         }
         return null;
     }
