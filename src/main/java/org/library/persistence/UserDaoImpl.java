@@ -1,6 +1,5 @@
 package org.library.persistence;
 
-import org.library.application.models.Book;
 import org.library.persistence.entities.BookEntity;
 import org.library.persistence.entities.UserEntity;
 import org.library.persistence.exceptions.BookEntityNotFoundInUserListException;

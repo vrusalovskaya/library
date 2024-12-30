@@ -1,5 +1,7 @@
 package org.library.presentation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.library.application.BookExporter;
 import org.library.application.Library;
 import org.library.application.LibraryImpl;
 import org.library.application.exceptions.*;
@@ -119,6 +121,20 @@ public class Main {
         } catch (BorrowedBooksLimitReachedException | BookNotAvailableException | BookNotFoundException |
                  UserNotFoundException e) {
             System.out.println(e.getMessage() + "\n");
+        }
+
+        try{
+            System.out.println(BookExporter.toJson(borrowedByTom));
+            System.out.println(BookExporter.toJson(library.getBooks()));
+        } catch (JsonProcessingException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try{
+            System.out.println(BookExporter.toXml(borrowedByTom));
+            System.out.println(BookExporter.toXml(library.getBooks()));
+        } catch (JsonProcessingException e) {
+            System.out.println(e.getMessage());
         }
 
     }
