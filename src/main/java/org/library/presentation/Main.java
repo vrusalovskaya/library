@@ -1,16 +1,20 @@
 package org.library.presentation;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.library.application.BookExporter;
 import org.library.application.Library;
 import org.library.application.LibraryImpl;
+import org.library.application.models.content.MimeType;
 import org.library.application.exceptions.*;
+import org.library.application.exporters.BookExporter;
+import org.library.application.exporters.JsonBookExporter;
+import org.library.application.exporters.XmlBookExporter;
 import org.library.application.models.Book;
 import org.library.application.models.User;
 import org.library.persistence.BookDaoImpl;
 import org.library.persistence.UserDaoImpl;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -123,20 +127,28 @@ public class Main {
             System.out.println(e.getMessage() + "\n");
         }
 
-        try{
-            System.out.println(BookExporter.toJson(borrowedByTom));
-            System.out.println(BookExporter.toJson(library.getBooks()));
-        } catch (JsonProcessingException e) {
-            System.out.println(e.getMessage());
-        }
+        BookExporter exporter = null;
+        BookExporter[] exporters = new BookExporter[]{new JsonBookExporter(), new XmlBookExporter()};
 
-        try{
-            System.out.println(BookExporter.toXml(borrowedByTom));
-            System.out.println(BookExporter.toXml(library.getBooks()));
-        } catch (JsonProcessingException e) {
-            System.out.println(e.getMessage());
-        }
+        try (Scanner in = new Scanner(System.in)) {
+            System.out.println("Specify the format for exporting books: ");
+            var enums = MimeType.values();
+            int enumsQuantity = enums.length;
+            for (int i = 1; i <= enumsQuantity; i++) {
+                System.out.println(i + ". " + enums[i - 1]);
+            }
+            String format = in.nextLine().toUpperCase();
 
+            var type = MimeType.valueOf(format);
+            exporter = Arrays.stream(exporters).filter(e -> e.canProcess(type)).findFirst().get();
+
+            try {
+                System.out.println("The books were exported to the " + format + " format:");
+                printList(exporter.export(library.getBooks()));
+            } catch (BookExportFailedException e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
 
 
